@@ -28,8 +28,8 @@ chk:
 # Settings
 ###############################################################################
 init:
-    git clone https://github.com/micro/go-micro.git
-    git clone https://github.com/grpc/grpc-go.git
+	git clone https://github.com/micro/go-micro.git
+	git clone https://github.com/grpc/grpc-go.git
 
 	go get google.golang.org/grpc
 	go get -u github.com/golang/protobuf/protoc-gen-go
@@ -59,7 +59,27 @@ server:
 ###############################################################################
 # Run
 ###############################################################################
-run:
-	go run ./grpc/client/main.go
+rserver:
 	go run ./grpc/server/main.go
+
+rclient:
+	go run ./grpc/client/main.go
+
+
+###############################################################################
+# Run background
+###############################################################################
+#run:
+#	go run ./grpc/server/main.go &
+#	sleep 0.5s
+#	go run ./grpc/client/main.go
+
+listen:
+	sudo lsof -i -P | grep "LISTEN"
+
+showps:
+	ps aux | grep 'go run gropc/server/main.go' | awk '{print $2}'
+
+stop:
+	kill $(ps aux | grep 'go run gropc/server/main.go' | awk '{print $2}')
 
