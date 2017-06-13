@@ -36,14 +36,13 @@ init:
 	brew install protobuf
 
 genproto:
-	protoc -I=$(SRC_DIR) --go_out=$(DST_DIR) $(SRC_DIR)/protos/sample.proto
-
+	protoc --go_out=plugins=grpc:. $(SRC_DIR)/protos/sample.proto
 
 #https://github.com/golang/protobuf
 #https://developers.google.com/protocol-buffers/docs/reference/go-generated
 #protoc --go_out=plugins=grpc:protos/. protos/*.proto
 #protoc --proto_path=grpc --go_out=grpc grpc/protos/*.proto
-#protoc -I=$(SRC_DIR) --go_out=$(DST_DIR) $SRC_DIR/protos/sample.proto
+#protoc -I=$(SRC_DIR) --go_out=$(DST_DIR) $(SRC_DIR)/protos/sample.proto
 
 ###############################################################################
 # Build
