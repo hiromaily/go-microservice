@@ -50,28 +50,28 @@ genproto:
 #http://www.grpc.io/docs/quickstart/go.html
 
 client:
-	go build -i -v ./grpc/client/
+	go build -i -race -v ./grpc/client/
 
 server:
-	go build -i -v ./grpc/server/
+	go build -i -race -v ./grpc/server/
 
 ###############################################################################
 # Run
 ###############################################################################
 rserver:
-	go run ./grpc/server/main.go
+	go run -race ./grpc/server/main.go
 
 rclient:
-	go run ./grpc/client/main.go
+	go run -race ./grpc/client/main.go
 
 
 ###############################################################################
 # Run background
 ###############################################################################
 #run:
-#	go run ./grpc/server/main.go &
+#	go run -race ./grpc/server/main.go &
 #	sleep 0.5s
-#	go run ./grpc/client/main.go
+#	go run -race ./grpc/client/main.go
 
 listen:
 	sudo lsof -i -P | grep "LISTEN"
