@@ -1,42 +1,56 @@
-# Note: tabs by space can't not used for Makefile!
-# -buildmode=plugin not supported on darwin/amd64
+# https://grpc.io/docs/tutorials/basic/go/
+# https://github.com/grpc/grpc-go/tree/
+# https://github.com/grpc/grpc-go/tree/master/examples/route_guide
+
 SRC_DIR=grpc
 DST_DIR=grpc
 
-###############################################################################
-# Golang detection and formatter
-###############################################################################
-fmt:
-	go fmt `go list ./... | grep -v '/vendor/'`
-
-vet:
-	go vet `go list ./... | grep -v '/vendor/'`
-
-lint:
-	golint ./... | grep -v '^vendor\/' || true
-	misspell `find . -name "*.go" | grep -v '/vendor/'`
-	ineffassign .
-
-chk:
-	go fmt `go list ./... | grep -v '/vendor/'`
-	go vet `go list ./... | grep -v '/vendor/'`
-	golint ./... | grep -v '^vendor\/' || true
-	misspell `find . -name "*.go" | grep -v '/vendor/'`
-	ineffassign .
 
 ###############################################################################
 # Settings
 ###############################################################################
+.PHONY: init
 init:
 	git clone https://github.com/micro/go-micro.git
 	git clone https://github.com/grpc/grpc-go.git
 
+	brew install protobuf
 	go get google.golang.org/grpc
 	go get -u github.com/golang/protobuf/protoc-gen-go
-	brew install protobuf
 
+	go get github.com/golang/mock/gomock
+	go install github.com/golang/mock/mockgen
+
+.PHONY: update
+update:
+	brew upgrade protobuf
+	go get -u google.golang.org/grpc
+	go get -u github.com/golang/protobuf/protoc-gen-go
+	protoc --version  # libprotoc 3.7.1
+
+	go get -u github.com/golang/mock/gomock
+	go install github.com/golang/mock/mockgen
+
+.PHONY: generate
+generate:
+	go generate ./examples/route_guide/...
+
+# Or
+.PHONY: genproto
 genproto:
-	protoc --go_out=plugins=grpc:. $(SRC_DIR)/protos/sample.proto
+	#protoc --go_out=plugins=grpc:. $(SRC_DIR)/protos/sample.proto
+	protoc -I examples/route_guide/rg_proto --go_out=plugins=grpc:examples/route_guide/rg_proto examples/route_guide/rg_proto/route_guide.proto
+
+# this code may be better to add to route_guide.pb.go
+# //go:generate mockgen -source ./route_guide.pb.go -destination .../mocks/rg_mock.go
+.PHONY: genmock
+genmockmaster/examples:
+	mockgen -source examples/route_guide/rg_proto/route_guide.pb.go -destination examples/route_guide/mocks/rg_mock.go
+
+.PHONY: clean
+clean:
+	rm -rf go-micro
+	rm -rf grpc-go
 
 #https://github.com/golang/protobuf
 #https://developers.google.com/protocol-buffers/docs/reference/go-generated
@@ -50,10 +64,10 @@ genproto:
 #http://www.grpc.io/docs/quickstart/go.html
 
 client:
-	go build -i -race -v ./grpc/client/
+	go build -i -v ./grpc/client/
 
 server:
-	go build -i -race -v ./grpc/server/
+	go build -i -v ./grpc/server/
 
 ###############################################################################
 # Run

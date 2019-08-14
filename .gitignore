@@ -3,12 +3,3 @@
 
 go-micro/
 grpc-go/
-
-# Binaries for programs and plugins
-*.so
-
-# Test binary, build with `go test -c`
-*.test
-
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
